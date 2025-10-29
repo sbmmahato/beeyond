@@ -31,8 +31,8 @@ Prerequisites:
 1) Configure environment variables
 - Create `api/.env`:
 ```
-DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
-DIRECT_DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
+DATABASE_URL="postgresql://postgres.rdrjohfpgeprasygizzl:NfXVSMaofkOqbFGB@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_DATABASE_URL="postgresql://postgres.rdrjohfpgeprasygizzl:NfXVSMaofkOqbFGB@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
 PORT=4000
 ```
 - Create `web/.env`:
