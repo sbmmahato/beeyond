@@ -1,0 +1,115 @@
+// datasource and generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  name              String
+  sku               String   @unique
+  price             Int // smallest unit (e.g., paise)
+  stock             Int
+  lowStockThreshold Int
+  image             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  orderItems       OrderItem[]
+  reservationItems ReservationItem[]
+  cartItems        CartItem[]
+  LowStockAlert    LowStockAlert[]
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+
+  @@unique([userId])
+  @@index([userId])
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  cartId    String
+  productId String
+  qty       Int
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
+model Reservation {
+  id        String            @id @default(cuid())
+  userId    String
+  status    ReservationStatus @default(ACTIVE)
+  address   String
+  shipping  String
+  expiresAt DateTime
+  createdAt DateTime          @default(now())
+  items     ReservationItem[]
+  order     Order?
+
+  @@index([userId])
+}
+
+model ReservationItem {
+  id            String @id @default(cuid())
+  reservationId String
+  productId     String
+  productName   String
+  price         Int
+  qty           Int
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id])
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CONSUMED
+  CANCELLED
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  reservationId String      @unique
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  price     Int
+  qty       Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model LowStockAlert {
+  id        String   @id @default(cuid())
+  productId String
+  stock     Int
+  threshold Int
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
