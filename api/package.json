@@ -9,7 +9,8 @@
     "prisma:generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "seed": "ts-node src/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
